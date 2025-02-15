@@ -5,12 +5,12 @@ class Puzzle:
     def __init__(self):
         self.gamma = 0.9
         self.num_cells = 16
-        # Define the solved states for the three phases of the puzzle
+      
         self.phase1_solved = [1, 2, 3, 4, self.num_cells] + [0]*11
         self.phase2_solved = [-1]*4 + [5, 6, 7, 8, self.num_cells] + [0]*7
         self.phase3_solved = [-1]*8 + [9, 10, 11, 12, 13, 14, 15, self.num_cells]
 
-        # Define the different states for each phase
+        
         self.phase1_states = self.generate_states([1, 2, 3, 4, 16], 0, 11)
         self.phase1_policy = self.policy_iteration(self.phase1_states)
 
@@ -21,7 +21,7 @@ class Puzzle:
         self.phase3_policy = self.policy_iteration(self.phase3_states)
 
     def get_possible_actions(self, state):
-        """Return a list of possible actions based on the current state."""
+       
         actions = []
         idx = state.index(self.num_cells)
         row, col = divmod(idx, 4)
@@ -34,7 +34,7 @@ class Puzzle:
         return actions
 
     def apply_move(self, state, action):
-        """Apply the action and return the resulting state."""
+        
         idx = state.index(self.num_cells)
         row, col = divmod(idx, 4)
 
@@ -50,18 +50,18 @@ class Puzzle:
         return state
 
     def is_partial_goal_state(self, state):
-        """Check if the state matches the partial goal."""
+        
         return (state[:4] == self.phase1_solved[:4] or 
                 state[:8] == self.phase2_solved[:8] or 
                 state == self.phase3_solved)
 
     def get_reward(self, state):
-        """Return the reward for reaching the current state."""
+        
         if self.is_partial_goal_state(state): return 1000
         else: return 0
 
     def mask_state(self, state, phase):
-        """Apply the appropriate mask for the current phase."""
+      
         if phase == 1:
             return [x if x in [1, 2, 3, 4, 16] else 0 for x in state]
         elif phase == 2:
@@ -71,7 +71,7 @@ class Puzzle:
         return state
 
     def policy_improvement(self, states, policy, value_function):
-        """Improvement step in policy iteration."""
+      
         stable = True
         for state in states:
             state_tuple = tuple(state)
@@ -98,7 +98,7 @@ class Puzzle:
         return stable
 
     def policy_evaluation(self, states, policy, value_function):
-        """Evaluation step in policy iteration."""
+       
         for state in states:
             state_tuple = tuple(state)
             if self.is_partial_goal_state(state):
@@ -109,7 +109,7 @@ class Puzzle:
             value_function[state_tuple] = self.get_reward(next_state) + self.gamma * value_function.get(tuple(next_state), 0)
 
     def policy_iteration(self, states):
-        """Perform policy iteration to find an optimal policy."""
+        
         value_function = {tuple(state): 0 for state in states}
         policy = {tuple(state): '' for state in states}
 
@@ -121,7 +121,7 @@ class Puzzle:
         return policy
 
     def generate_states(self, distinct_numbers, num_minus_ones, num_zeros):
-        """Generate all possible states for a given set of numbers."""
+        
         arr = distinct_numbers + [0] * num_zeros
         result = []
         for perm in distinct_permutations(arr):
@@ -129,7 +129,7 @@ class Puzzle:
         return result
 
     def scramble_puzzle(self, num_steps=250):
-        """Scramble the puzzle by performing random moves."""
+      
         solved_state = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
         current_state = solved_state.copy()
         
@@ -141,7 +141,7 @@ class Puzzle:
         return current_state
 
     def display_state(self, state):
-        """Display the current state of the puzzle."""
+      
         for i in range(0, 16, 4):
             row = ["|"]
             for num in state[i:i + 4]:
@@ -151,7 +151,7 @@ class Puzzle:
         print("----------------------------")
 
     def solve_puzzle(self, puzzle):
-        """Solve the puzzle step by step for each phase."""
+     
         state = puzzle.copy()
 
         def solve_phase(masked_state, policy):
@@ -167,7 +167,7 @@ class Puzzle:
                     break
             return actions_taken
 
-        # Solve phase 1
+    # fOR 1 to 4
         phase1_masked_state = self.mask_state(state, 1)
         phase1_actions = solve_phase(phase1_masked_state, self.phase1_policy)
 
@@ -175,7 +175,7 @@ class Puzzle:
             state = self.apply_move(state, action)
             self.display_state(state)
 
-        # Solve phase 2
+   # FOR 5 to 8
         phase2_masked_state = self.mask_state(state, 2)
         phase2_actions = solve_phase(phase2_masked_state, self.phase2_policy)
 
@@ -183,7 +183,7 @@ class Puzzle:
             state = self.apply_move(state, action)
             self.display_state(state)
 
-        # Solve phase 3
+     #for 9 to 15
         phase3_masked_state = self.mask_state(state, 3)
         phase3_actions = solve_phase(phase3_masked_state, self.phase3_policy)
 
